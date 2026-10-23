@@ -1,0 +1,42 @@
+<%
+  const pageTitle = typeof title !== 'undefined' && title ? title : site.seo.title;
+  // publicUrlKnown (src/app.js): sem domínio definido (ex.: amostra estática
+  // gerada sem --url) é melhor omitir links absolutos do que apontar para localhost.
+%>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title><%= pageTitle %></title>
+<meta name="description" content="<%= site.seo.description %>">
+<% if (publicUrlKnown) { %>
+<link rel="canonical" href="<%= site.seo.url %><%= currentPath %>">
+<% } %>
+
+<!-- Open Graph: prévia do link no WhatsApp, Instagram e Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="<%= site.seo.locale %>">
+<meta property="og:site_name" content="<%= site.brand.name %>">
+<meta property="og:title" content="<%= pageTitle %>">
+<meta property="og:description" content="<%= site.seo.description %>">
+<% if (publicUrlKnown) { %>
+<meta property="og:url" content="<%= site.seo.url %><%= currentPath %>">
+<meta property="og:image" content="<%= site.seo.url %><%= site.seo.ogImage %>">
+<% } else { %>
+<meta property="og:image" content="<%= site.seo.ogImage %>">
+<% } %>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="<%= typeof themeColor !== 'undefined' ? themeColor : '#15100c' %>">
+
+<!-- Ícone & Manifesto -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/site.webmanifest">
+
+<!-- Pré-carregamento das fontes variáveis locais -->
+<link rel="preload" href="/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- Folhas de Estilo -->
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/main.css">
+<% if (typeof hasThemeOverrides !== 'undefined' && hasThemeOverrides) { %>
+<link rel="stylesheet" href="/css/theme.css">
+<% } %>

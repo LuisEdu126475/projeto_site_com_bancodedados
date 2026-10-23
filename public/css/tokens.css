@@ -1,0 +1,116 @@
+/* ==========================================================================
+   TOKENS & TEMAS WHITE-LABEL
+   --------------------------------------------------------------------------
+   Três paletas prontas para diferentes perfis de cafeteria:
+   • data-theme="noir"  — Espresso profundo, latão envelhecido e creme (padrão)
+   • data-theme="terra" — Torra média, terracota quente e cobre
+   • data-theme="creme" — Pergaminho claro, espresso escuro e ouro fosco
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url('/fonts/cormorant-garamond-latin-wght-normal.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url('/fonts/cormorant-garamond-latin-wght-italic.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url('/fonts/manrope-latin-wght-normal.woff2') format('woff2-variations');
+}
+
+:root,
+[data-theme='noir'] {
+  /* Espresso à noite: marrom de torra profunda, crema e leite vaporizado */
+  --color-bg: #14100d;
+  --color-bg-elevated: #1b1511;
+  --color-surface: #221a15;
+  --color-surface-soft: #2b211b;
+  --color-surface-glass: rgba(27, 21, 17, 0.84);
+  --color-text: #f3e9dc;
+  --color-text-muted: #bcab98;
+  --color-text-subtle: #8f7e6d;
+  --color-accent: #d4a26a;
+  --color-accent-strong: #e7bb85;
+  --color-accent-Contrast: #1a120c;
+  --color-border: rgba(212, 162, 106, 0.16);
+  --color-border-strong: rgba(212, 162, 106, 0.4);
+  --color-success: #4ca97a;
+  --color-warning: #d89b44;
+  --color-danger: #d46258;
+  --shadow-luxury: 0 24px 60px -20px rgba(0, 0, 0, 0.78);
+}
+
+[data-theme='terra'] {
+  --color-bg: #120c09;
+  --color-bg-elevated: #1b120e;
+  --color-surface: #231712;
+  --color-surface-soft: #2e1f19;
+  --color-surface-glass: rgba(35, 23, 18, 0.8);
+  --color-text: #f7ede2;
+  --color-text-muted: #c8b29d;
+  --color-text-subtle: #927b67;
+  --color-accent: #d08152;
+  --color-accent-strong: #e39a6d;
+  --color-accent-Contrast: #120c09;
+  --color-border: rgba(208, 129, 82, 0.2);
+  --color-border-strong: rgba(208, 129, 82, 0.48);
+}
+
+[data-theme='creme'] {
+  --color-bg: #f6f0e6;
+  --color-bg-elevated: #efe6d7;
+  --color-surface: #ffffff;
+  --color-surface-soft: #ebe0cf;
+  --color-surface-glass: rgba(246, 240, 230, 0.85);
+  --color-text: #1c1512;
+  --color-text-muted: #5b4c42;
+  --color-text-subtle: #877568;
+  --color-accent: #9a6836;
+  --color-accent-strong: #7b5026;
+  --color-accent-Contrast: #f9f4ec;
+  --color-border: rgba(28, 21, 18, 0.14);
+  --color-border-strong: rgba(154, 104, 54, 0.45);
+  --shadow-luxury: 0 24px 50px -22px rgba(28, 21, 18, 0.16);
+}
+
+:root {
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --container-max: 1200px;
+  --container-pad: clamp(1.15rem, 4vw, 3rem);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Cor de identificação de cada canal (só pontos e anéis, nunca logotipos) */
+  --channel-ifood: #ea1d2c;
+  --channel-whatsapp: #25d366;
+  --channel-instagram: #d62976;
+  --channel-store: var(--color-accent);
+
+  /* Texto sobre fotos escurecidas (igual em todos os temas) */
+  --on-photo: #f6eee3;
+  --on-photo-muted: #e2d4c3;
+  --on-photo-accent: #e7bb85;
+
+  --action-bar-h: 64px;
+}
+

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="<%= site.theme.preset %>">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <!-- =====================================================================
+       TELA DE LOGIN
+       ===================================================================== -->
+  <section id="login-view" class="login-screen" aria-labelledby="login-title">
+    <div class="login-card">
+      <span class="eyebrow"><%= site.brand.name %> · Backoffice</span>
+      <h1 class="section-title" id="login-title">Acesso da Equipe</h1>
+      <p class="menu-item-desc">
+        Gestão de reservas em tempo real, cardápio digital e auditoria de operações.
+      </p>
+
+      <form id="login-form" class="form-grid" novalidate>
+        <div class="form-field form-field-full">
+          <label class="form-label" for="login-email">E-mail corporativo</label>
+          <input
+            type="email"
+            id="login-email"
+            name="email"
+            class="form-input"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="form-field form-field-full">
+          <label class="form-label" for="login-password">Senha</label>
+          <input
+            type="password"
+            id="login-password"
+            name="password"
+            class="form-input"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <div class="form-field form-field-full" id="login-error-box" hidden>
+          <div class="form-alert" role="alert" id="login-error-text"></div>
+        </div>
+
+        <div class="form-field form-field-full">
+          <button type="submit" id="login-submit-btn" class="btn btn-primary">
+            Entrar no Painel
+          </button>
+        </div>
+      </form>
+
+      <p class="kpi-sub">
+        <a href="/">← Voltar para a vitrine pública</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       PAINEL AUTENTICADO
+       ===================================================================== -->
+  <div id="dashboard-view" class="admin-shell" hidden>
+    <header class="admin-topbar">
+      <div class="brand-mark">
+        <a href="/" class="brand-name"><%= site.brand.name %><span class="brand-dot">.</span></a>
+        <span class="brand-descriptor">Gestão Operacional</span>
+      </div>
+
+      <nav class="admin-tabs" role="tablist" aria-label="Seções do painel">
+        <button type="button" class="admin-tab is-active" data-admin-tab="reservations">Reservas</button>
+        <button type="button" class="admin-tab" data-admin-tab="closures">Datas fechadas</button>
+        <button type="button" class="admin-tab" data-admin-tab="menu">Cardápio Digital</button>
+        <button type="button" class="admin-tab" data-admin-tab="audit" id="audit-tab-btn">Auditoria</button>
+        <button type="button" class="admin-tab" data-admin-tab="account">Minha Senha</button>
+      </nav>
+
+      <div class="action-group">
+        <span class="live-pill" id="live-indicator" title="O painel confere novas reservas a cada 30 segundos">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span id="live-indicator-text">Atualização automática</span>
+        </span>
+        <button type="button" id="sound-toggle-btn" class="chip-btn" aria-pressed="true">Som de alerta: ligado</button>
+        <span class="kpi-sub" id="admin-user-badge"></span>
+        <button type="button" id="logout-btn" class="chip-btn">Sair</button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <!-- KPIs -->
+      <section class="kpi-grid" aria-label="Indicadores do dia">
+        <div class="kpi-card">
+          <div class="kpi-label">Reservas Hoje</div>
+          <div class="kpi-value" id="kpi-today-count">0</div>
+          <div class="kpi-sub"><span id="kpi-today-guests">0</span> pessoas esperadas hoje</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Aguardando Confirmação</div>
+          <div class="kpi-value" id="kpi-pending-count">0</div>
+          <div class="kpi-sub">Solicitações pendentes</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Próximos 7 Dias</div>
+          <div class="kpi-value" id="kpi-week-count">0</div>
+          <div class="kpi-sub"><span id="kpi-week-guests">0</span> lugares reservados</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Capacidade por Horário</div>
+          <div class="kpi-value" id="kpi-capacity"><%= site.reservations.capacityPerSlot %></div>
+          <div class="kpi-sub">lugares por janela de <%= site.reservations.slotMinutes %> min</div>
+        </div>
+      </section>
+
+      <!-- ABA 1: RESERVAS -->
+      <section data-admin-panel="reservations">
+        <div class="toolbar">
+          <div class="toolbar-filters">
+            <label>
+              De
+              <input type="date" id="filter-from">
+            </label>
+            <label>
+              Até
+              <input type="date" id="filter-to">
+            </label>
+            <label>
+              Status
+              <select id="filter-status">
+                <option value="">Todos</option>
+                <option value="pending">Pendentes</option>
+                <option value="confirmed">Confirmadas</option>
+                <option value="seated">Na mesa</option>
+                <option value="completed">Concluídas</option>
+                <option value="cancelled">Canceladas</option>
+                <option value="no_show">Não compareceu</option>
+              </select>
+            </label>
+            <label>
+              Busca (nome, telefone, código)
+              <input type="search" id="filter-search" placeholder="Ex.: Mariana ou #A7K9">
+            </label>
+            <button type="button" id="filter-apply-btn" class="btn btn-primary btn-sm">Filtrar</button>
+            <button type="button" id="filter-clear-btn" class="chip-btn">Limpar</button>
+          </div>
+
+          <div class="action-group">
+            <a href="/api/admin/reservations/export.csv" id="export-csv-link" class="btn btn-outline btn-sm">
+              Exportar CSV
+            </a>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Data & Hora</th>
+                <th>Cliente</th>
+                <th>Mesa</th>
+                <th>Experiência</th>
+                <th>Status</th>
+                <th>Ações Rápidas</th>
+              </tr>
+            </thead>
+            <tbody id="reservations-tbody">
+              <tr>
+                <td colspan="7">Carregando reservas...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-bar">
+          <span id="reservations-summary">0 registros</span>
+          <div class="action-group">
+            <button type="button" id="page-prev-btn" class="chip-btn">← Anterior</button>
+            <span id="page-indicator">Página 1</span>
+            <button type="button" id="page-next-btn" class="chip-btn">Próxima →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA: DATAS FECHADAS -->
+      <section data-admin-panel="closures" hidden>
+        <div class="toolbar">
+          <div>
+            <h2 class="menu-category-title">Datas sem reservas</h2>
+            <p class="menu-category-desc">
+              Bloqueie feriados, eventos fechados ou reformas. Nesses dias o site deixa de oferecer horários.
+              Reservas já feitas para a data continuam valendo: confira a lista e avise os clientes.
+            </p>
+          </div>
+        </div>
+
+        <form id="closure-form" class="toolbar" novalidate>
+          <div class="toolbar-filters">
+            <label>
+              Data
+              <input type="date" id="closure-date" required>
+            </label>
+            <label>
+              Motivo (só a equipe vê)
+              <input type="text" id="closure-reason" maxlength="120" placeholder="Ex.: Evento fechado">
+            </label>
+            <button type="submit" class="btn btn-primary btn-sm">Bloquear data</button>
+          </div>
+        </form>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Motivo</th>
+                <th>Definida em</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="closures-tbody">
+              <tr>
+                <td colspan="4">Carregando datas...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ABA 2: CARDÁPIO DIGITAL -->
+      <section data-admin-panel="menu" hidden>
+        <div class="toolbar">
+          <div>
+            <h2 class="menu-category-title">Cardápio Digital</h2>
+            <p class="menu-category-desc">
+              Adicione itens sazonais, altere preços ou pause um grão esgotado em tempo real.
+            </p>
+          </div>
+          <div class="action-group">
+            <button type="button" id="new-category-btn" class="btn btn-outline btn-sm">+ Nova Categoria</button>
+            <button type="button" id="new-item-btn" class="btn btn-primary btn-sm">+ Novo Item</button>
+          </div>
+        </div>
+
+        <div id="admin-menu-container"></div>
+      </section>
+
+      <!-- ABA 3: AUDITORIA -->
+      <section data-admin-panel="audit" hidden>
+        <div class="toolbar">
+          <div>
+            <h2 class="menu-category-title">Trilha de Auditoria Imutável</h2>
+            <p class="menu-category-desc">
+              Histórico das últimas 100 operações administrativas registradas no banco.
+            </p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Data/Hora (UTC)</th>
+                <th>Usuário</th>
+                <th>Ação</th>
+                <th>Entidade</th>
+                <th>Detalhes</th>
+              </tr>
+            </thead>
+            <tbody id="audit-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ABA 4: TROCA DE SENHA -->
+      <section data-admin-panel="account" hidden>
+        <div class="login-card">
+          <h2 class="menu-category-title">Alterar Senha</h2>
+          <p class="menu-item-desc">
+            Mínimo de 12 caracteres, combinando letras e números ou símbolos. Outras sessões abertas serão encerradas.
+          </p>
+          <form id="password-form" class="form-grid" novalidate>
+            <div class="form-field form-field-full">
+              <label class="form-label" for="curr-pass">Senha atual</label>
+              <input type="password" id="curr-pass" name="currentPassword" class="form-input" required>
+            </div>
+            <div class="form-field form-field-full">
+              <label class="form-label" for="new-pass">Nova senha (12+ caracteres)</label>
+              <input type="password" id="new-pass" name="newPassword" class="form-input" minlength="12" required>
+            </div>
+            <div class="form-field form-field-full">
+              <button type="submit" class="btn btn-primary btn-sm">Atualizar Senha</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: ITEM DO CARDÁPIO -->
+  <div class="modal-backdrop" id="item-modal" hidden>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="item-modal-title">
+      <h2 class="menu-category-title" id="item-modal-title">Item do Cardápio</h2>
+      <form id="item-form" class="form-grid" novalidate>
+        <input type="hidden" id="item-id">
+        <div class="form-field">
+          <label class="form-label" for="item-category">Categoria</label>
+          <select id="item-category" class="form-select" required></select>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="item-price">Preço (R$)</label>
+          <input type="number" id="item-price" class="form-input" step="0.50" min="0" required placeholder="24.00">
+        </div>
+        <div class="form-field form-field-full">
+          <label class="form-label" for="item-name">Nome do item</label>
+          <input type="text" id="item-name" class="form-input" maxlength="80" required>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="item-origin">Origem / Subtítulo</label>
+          <input type="text" id="item-origin" class="form-input" maxlength="80">
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="item-volume">Volume / Peso (ex: 200 ml)</label>
+          <input type="text" id="item-volume" class="form-input" maxlength="20">
+        </div>
+        <div class="form-field form-field-full">
+          <label class="form-label" for="item-notes">Notas sensoriais</label>
+          <input type="text" id="item-notes" class="form-input" maxlength="120" placeholder="Jasmim · Pêssego · Mel">
+        </div>
+        <div class="form-field form-field-full">
+          <label class="form-label" for="item-desc">Descrição</label>
+          <textarea id="item-desc" rows="3" class="form-textarea" maxlength="400"></textarea>
+        </div>
+        <div class="form-field">
+          <label class="consent-row" for="item-signature">
+            <input type="checkbox" id="item-signature">
+            <span>Destacar como Assinatura</span>
+          </label>
+        </div>
+        <div class="form-field">
+          <label class="consent-row" for="item-available">
+            <input type="checkbox" id="item-available" checked>
+            <span>Disponível no cardápio público</span>
+          </label>
+        </div>
+        <div class="form-field form-field-full action-group">
+          <button type="submit" class="btn btn-primary btn-sm">Salvar Item</button>
+          <button type="button" id="item-modal-cancel" class="btn btn-outline btn-sm">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CATEGORIA DO CARDÁPIO -->
+  <div class="modal-backdrop" id="category-modal" hidden>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+      <h2 class="menu-category-title" id="category-modal-title">Categoria do Cardápio</h2>
+      <form id="category-form" class="form-grid" novalidate>
+        <input type="hidden" id="cat-id">
+        <div class="form-field">
+          <label class="form-label" for="cat-name">Nome da categoria</label>
+          <input type="text" id="cat-name" class="form-input" maxlength="60" required>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="cat-slug">Identificador (slug)</label>
+          <input type="text" id="cat-slug" class="form-input" maxlength="60" placeholder="ex: filtrados" required>
+        </div>
+        <div class="form-field form-field-full">
+          <label class="form-label" for="cat-desc">Descrição curta</label>
+          <input type="text" id="cat-desc" class="form-input" maxlength="240">
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="cat-pos">Ordem</label>
+          <input type="number" id="cat-pos" class="form-input" value="1" min="0">
+        </div>
+        <div class="form-field">
+          <label class="consent-row" for="cat-active">
+            <input type="checkbox" id="cat-active" checked>
+            <span>Categoria ativa</span>
+          </label>
+        </div>
+        <div class="form-field form-field-full action-group">
+          <button type="submit" class="btn btn-primary btn-sm">Salvar Categoria</button>
+          <button type="button" id="category-modal-cancel" class="btn btn-outline btn-sm">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>
+

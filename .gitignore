@@ -1,0 +1,29 @@
+# Dependências
+node_modules/
+
+# Banco de dados local e backups
+data/
+backups/
+*.db
+*.db-shm
+*.db-wal
+
+# Variáveis de ambiente locais
+.env
+.env.local
+.env.*.local
+
+# Logs e cobertura
+*.log
+coverage/
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+
+# Site estático gerado (npm run build:static)
+dist/
+amostra/

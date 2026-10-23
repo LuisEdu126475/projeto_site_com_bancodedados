@@ -1,0 +1,99 @@
+<%
+  const addr = site.contact.address;
+  const reservationsOn = site.reservations.enabled;
+  const statusText = typeof liveStatus !== 'undefined' && liveStatus ? liveStatus.label : 'Horário de funcionamento';
+  const statusOpen = typeof liveStatus !== 'undefined' && liveStatus && liveStatus.open;
+%>
+<a href="#conteudo-principal" class="skip-link">Pular para o conteúdo</a>
+
+<div class="topbar">
+  <div class="container topbar-inner">
+    <p class="open-status">
+      <span class="status-dot<%= statusOpen ? ' is-open' : '' %>" data-open-dot aria-hidden="true"></span>
+      <span data-open-status><%= statusText %></span>
+    </p>
+    <div class="topbar-meta">
+      <a href="<%= links.maps %>" target="_blank" rel="noopener noreferrer">
+        <%= addr.street %>, <span data-city-text><%= addr.city %>/<%= addr.state %></span>
+      </a>
+      <a href="<%= links.whatsapp %>" target="_blank" rel="noopener noreferrer">
+        WhatsApp <%= site.contact.phoneDisplay %>
+      </a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <a href="/" class="brand-mark" aria-label="<%= site.brand.name %>, página inicial">
+      <span class="brand-name"><span data-brand-text><%= site.brand.name %></span><span class="brand-dot">.</span></span>
+      <% if (site.brand.descriptor) { %>
+        <span class="brand-descriptor" data-descriptor-text><%= site.brand.descriptor %></span>
+      <% } %>
+    </a>
+
+    <nav class="primary-nav" aria-label="Navegação principal">
+      <a href="/#menu" class="nav-link">Cardápio</a>
+      <a href="/#experiencia" class="nav-link">A casa</a>
+      <a href="/#galeria" class="nav-link"><%= links.instagram ? 'Instagram' : 'Ambiente' %></a>
+      <a href="/#visite" class="nav-link">Visite</a>
+    </nav>
+
+    <div class="header-cta">
+      <% if (reservationsOn) { %>
+        <a href="/#reserva" class="btn btn-outline btn-sm">Reservar mesa</a>
+      <% } %>
+      <% if (links.ifood) { %>
+        <a href="<%= links.ifood %>" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Pedir no iFood</a>
+      <% } else { %>
+        <a href="<%= links.whatsappOrder %>" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Pedir pelo WhatsApp</a>
+      <% } %>
+    </div>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      id="mobile-menu-open"
+      aria-label="Abrir menu"
+      aria-controls="mobile-drawer"
+      aria-expanded="false"
+    >
+      <%- include('icon', { name: 'menu' }) %>
+      <span>Menu</span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+  <div class="mobile-drawer-panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="mobile-drawer-top">
+      <span class="brand-name"><span data-brand-text><%= site.brand.name %></span><span class="brand-dot">.</span></span>
+      <button type="button" class="menu-toggle" id="mobile-menu-close" aria-label="Fechar menu">
+        <%- include('icon', { name: 'close' }) %>
+      </button>
+    </div>
+
+    <nav class="mobile-drawer-links" aria-label="Menu do celular">
+      <a href="/#menu" data-drawer-link>Cardápio</a>
+      <a href="/#experiencia" data-drawer-link>A casa</a>
+      <a href="/#galeria" data-drawer-link><%= links.instagram ? 'Instagram' : 'Ambiente' %></a>
+      <% if (reservationsOn) { %><a href="/#reserva" data-drawer-link>Reservar mesa</a><% } %>
+      <a href="/#visite" data-drawer-link>Endereço e horários</a>
+    </nav>
+
+    <div class="mobile-drawer-channels">
+      <p class="open-status">
+        <span class="status-dot<%= statusOpen ? ' is-open' : '' %>" data-open-dot aria-hidden="true"></span>
+        <span data-open-status><%= statusText %></span>
+      </p>
+      <% if (links.ifood) { %>
+        <a href="<%= links.ifood %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          <%- include('icon', { name: 'scooter' }) %> Pedir no iFood
+        </a>
+      <% } %>
+      <a href="<%= links.whatsappOrder %>" target="_blank" rel="noopener noreferrer" class="btn <%= links.ifood ? 'btn-outline' : 'btn-primary' %>">
+        <%- include('icon', { name: 'chat' }) %> Pedir pelo WhatsApp
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="<%= site.theme.preset %>"<%- staticMode ? ' data-static="true"' : '' %>>
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main id="conteudo-principal" class="section legal-page" data-whatsapp="<%= site.contact.whatsapp %>" data-brand="<%= site.brand.name %>">
+    <div class="container legal-container">
+      <p class="eyebrow">LGPD, Lei nº 13.709/2018</p>
+      <h1 class="section-title">Política de Privacidade</h1>
+      <p class="section-lead">
+        Versão de <strong><%= site.legal.privacyPolicyVersion.split('-').reverse().join('/') %></strong>.
+        Controladora: <strong><%= site.brand.legalName %></strong>, CNPJ <%= site.brand.cnpj %>.
+      </p>
+
+      <div class="legal-body">
+        <h2>1. Quais dados usamos e por quê</h2>
+        <p>
+          Quando você pede uma reserva pelo site, usamos só o necessário para identificar e confirmar a sua mesa:
+          <strong>nome</strong>, <strong>número de WhatsApp</strong>, <strong>e-mail (opcional)</strong>,
+          <strong>data, horário, número de pessoas e experiência escolhida</strong> e as <strong>observações</strong>
+          que você escrever (como restrições alimentares).
+          <% if (staticMode) { %>
+            Pedidos montados no cardápio seguem o mesmo caminho: viram uma mensagem no WhatsApp.
+          <% } %>
+        </p>
+
+        <% if (staticMode) { %>
+          <h2>2. Como os dados chegam até nós</h2>
+          <p>
+            Este site não tem banco de dados e não guarda o que você digita. Ao tocar em enviar, o próprio site monta uma
+            mensagem e abre o WhatsApp no seu aparelho; os dados só chegam até nós se você enviar essa mensagem. A partir daí,
+            eles ficam na nossa conversa do WhatsApp, usada somente para cuidar da sua reserva ou do seu pedido.
+          </p>
+
+          <h2>3. Compartilhamento</h2>
+          <p>
+            Não vendemos nem compartilhamos seus dados para publicidade. O envio usa o WhatsApp (Meta), que trata a conversa
+            conforme a política de privacidade dele. Os links para iFood, Instagram e Google Maps levam a serviços de terceiros,
+            com regras próprias.
+          </p>
+
+          <h2>4. Por quanto tempo</h2>
+          <p>
+            Mantemos a conversa enquanto ela for útil para o atendimento e apagamos mensagens antigas periodicamente. Você pode
+            pedir a exclusão a qualquer momento.
+          </p>
+
+          <h2>5. Cookies</h2>
+          <p>Este site não usa cookies nem ferramentas de rastreamento.</p>
+        <% } else { %>
+          <h2>2. Proteção contra abuso</h2>
+          <p>
+            Para proteger o sistema de reservas contra envios automáticos, usamos um identificador criptográfico irreversível
+            (HMAC-SHA256) derivado do endereço IP da conexão. O endereço IP em si não é guardado.
+          </p>
+
+          <h2>3. Compartilhamento e armazenamento</h2>
+          <p>
+            Não vendemos nem compartilhamos seus dados para publicidade. As reservas ficam no sistema da
+            <%= site.brand.name %>, acessível só à equipe autorizada, com login individual e registro de cada ação.
+            Os links para WhatsApp, iFood, Instagram e Google Maps levam a serviços de terceiros, com regras próprias.
+          </p>
+
+          <h2>4. Por quanto tempo</h2>
+          <p>
+            Os dados pessoais de uma reserva são mantidos por até <strong><%= site.legal.retentionDays %> dias</strong> depois
+            da visita. Depois disso são anonimizados, e ficam apenas números agregados de ocupação.
+          </p>
+
+          <h2>5. Cookies</h2>
+          <p>
+            O site público não usa cookies nem ferramentas de rastreamento. Só a área da equipe usa cookies, necessários
+            para o login: um de sessão e outro que reconhece aparelhos já usados pela equipe.
+          </p>
+        <% } %>
+
+        <h2>6. Seus direitos</h2>
+        <p>
+          Você pode pedir a confirmação do tratamento, o acesso, a correção ou a exclusão dos seus dados a qualquer momento
+          pelo e-mail <a href="mailto:<%= site.legal.dpoEmail %>"><strong><%= site.legal.dpoEmail %></strong></a>.
+        </p>
+      </div>
+
+      <p><a href="/" class="btn btn-outline btn-sm">Voltar para a página inicial</a></p>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

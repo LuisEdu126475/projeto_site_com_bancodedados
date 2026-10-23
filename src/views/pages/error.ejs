@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="<%= site.theme.preset %>"<%- staticMode ? ' data-static="true"' : '' %>>
+<head>
+  <%- include('../partials/head') %>
+  <meta name="robots" content="noindex">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main id="conteudo-principal" class="section error-page" data-whatsapp="<%= site.contact.whatsapp %>" data-brand="<%= site.brand.name %>">
+    <div class="container">
+      <p class="eyebrow">Erro <%= status %></p>
+      <h1 class="section-title"><%= title %></h1>
+      <p class="section-lead">
+        <%= status === 404 ? 'Esta página não existe ou mudou de endereço.' : 'Algo não funcionou como deveria. Tente de novo em instantes.' %>
+        O cardápio e os nossos canais continuam a um toque.
+      </p>
+      <p class="error-actions">
+        <a href="/" class="btn btn-primary">Voltar para o início</a>
+        <a href="/#menu" class="btn btn-outline">Ver o cardápio</a>
+      </p>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

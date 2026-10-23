@@ -1,0 +1,731 @@
+<%
+  const addr = site.contact.address;
+  const reservationsOn = site.reservations.enabled;
+  const statusText = liveStatus ? liveStatus.label : 'Horário de funcionamento';
+  const statusOpen = Boolean(liveStatus && liveStatus.open);
+  const gallery = site.content.gallery;
+  const visitPhoto = gallery[0] || { src: site.content.hero.image, alt: 'Fachada e salão da cafeteria' };
+  const icon = (name) => include('../partials/icon', { name });
+%><!DOCTYPE html>
+<html lang="pt-BR" data-theme="<%= site.theme.preset %>"<%- demoMode ? ' data-demo="true"' : '' %><%- staticMode ? ' data-static="true"' : '' %>>
+<head>
+  <%- include('../partials/head') %>
+  <script type="application/ld+json"><%- JSON.stringify(jsonLd).replace(/</g, '\\u003c') %></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main
+    id="conteudo-principal"
+    data-whatsapp="<%= site.contact.whatsapp %>"
+    data-brand="<%= site.brand.name %>"
+    data-address="<%= addr.street %>, <%= addr.city %>/<%= addr.state %>"
+  >
+    <!-- ===================================================================
+         ABERTURA
+         =================================================================== -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-media" aria-hidden="true">
+        <img src="<%= site.content.hero.image %>" alt="" width="1376" height="768" fetchpriority="high" decoding="async">
+      </div>
+
+      <div class="container hero-inner">
+        <div class="hero-content">
+          <p class="eyebrow" id="hero-eyebrow"><%= site.content.hero.eyebrow %></p>
+          <h1 class="hero-title" id="hero-heading">
+            <span class="hero-line" id="hero-title-1"><%= site.content.hero.titleLine1 %></span>
+            <span class="hero-line hero-line-offset" id="hero-title-2"><%= site.content.hero.titleLine2 %></span>
+          </h1>
+          <p class="hero-lead" id="hero-lead"><%= site.content.hero.lead %></p>
+
+          <div class="hero-actions">
+            <% if (links.ifood) { %>
+              <a href="<%= links.ifood %>" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">
+                <%- icon('scooter') %> Pedir no iFood
+              </a>
+            <% } %>
+            <a href="<%= links.whatsappOrder %>" class="btn <%= links.ifood ? 'btn-glass' : 'btn-primary' %> btn-lg" target="_blank" rel="noopener noreferrer">
+              <%- icon('chat') %> Pedir pelo WhatsApp
+            </a>
+            <a href="#menu" class="text-link">Ver o cardápio</a>
+          </div>
+
+          <p class="hero-status">
+            <span class="open-status">
+              <span class="status-dot<%= statusOpen ? ' is-open' : '' %>" data-open-dot aria-hidden="true"></span>
+              <span data-open-status><%= statusText %></span>
+            </span>
+            <a href="<%= links.maps %>" target="_blank" rel="noopener noreferrer" class="hero-status-place">
+              <%- icon('pin') %><%= addr.district || addr.street %>, <%= addr.city %>
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         CANAIS: COMO VOCÊ QUER SEU CAFÉ HOJE?
+         =================================================================== -->
+    <section id="pedir" class="section channels" aria-labelledby="channels-heading">
+      <div class="container">
+        <h2 class="channels-title" id="channels-heading"><%= site.content.channels.title %></h2>
+
+        <ul class="channel-list">
+          <% if (links.ifood) { %>
+          <li class="channel channel-ifood">
+            <a class="channel-link" href="<%= links.ifood %>" target="_blank" rel="noopener noreferrer">
+              <span class="channel-icon"><%- icon('scooter') %></span>
+              <span class="channel-text">
+                <span class="channel-name">Em casa</span>
+                <span class="channel-desc">Peça pelo iFood e receba onde estiver.</span>
+              </span>
+              <span class="channel-leader" aria-hidden="true"></span>
+              <span class="channel-action">Abrir o iFood</span>
+            </a>
+          </li>
+          <% } %>
+          <li class="channel channel-whatsapp">
+            <a class="channel-link" href="<%= links.whatsappOrder %>" target="_blank" rel="noopener noreferrer">
+              <span class="channel-icon"><%- icon('chat') %></span>
+              <span class="channel-text">
+                <span class="channel-name">Para retirar</span>
+                <span class="channel-desc">Encomende pelo WhatsApp e retire no balcão.</span>
+              </span>
+              <span class="channel-leader" aria-hidden="true"></span>
+              <span class="channel-action">Chamar no WhatsApp</span>
+            </a>
+          </li>
+          <li class="channel channel-store">
+            <a class="channel-link" href="<%= links.maps %>" target="_blank" rel="noopener noreferrer">
+              <span class="channel-icon"><%- icon('pin') %></span>
+              <span class="channel-text">
+                <span class="channel-name">Aqui na loja</span>
+                <span class="channel-desc">
+                  <%= addr.street %><%= addr.district ? ', ' + addr.district : '' %>.
+                  <span class="channel-status" data-open-status><%= statusText %></span>
+                </span>
+              </span>
+              <span class="channel-leader" aria-hidden="true"></span>
+              <span class="channel-action">Como chegar</span>
+            </a>
+          </li>
+          <% if (links.instagram) { %>
+          <li class="channel channel-instagram">
+            <a class="channel-link" href="<%= links.instagram %>" target="_blank" rel="noopener noreferrer">
+              <span class="channel-icon"><%- icon('camera') %></span>
+              <span class="channel-text">
+                <span class="channel-name">No Instagram</span>
+                <span class="channel-desc">Novidades da semana, safras que chegam e bastidores do balcão.</span>
+              </span>
+              <span class="channel-leader" aria-hidden="true"></span>
+              <span class="channel-action">Seguir <%= links.instagramHandle %></span>
+            </a>
+          </li>
+          <% } %>
+          <% if (links.onlineStore) { %>
+          <li class="channel channel-online">
+            <a class="channel-link" href="<%= links.onlineStore %>" target="_blank" rel="noopener noreferrer">
+              <span class="channel-icon"><%- icon('bag') %></span>
+              <span class="channel-text">
+                <span class="channel-name">Para levar para casa</span>
+                <span class="channel-desc">Grãos, kits e presentes na loja online.</span>
+              </span>
+              <span class="channel-leader" aria-hidden="true"></span>
+              <span class="channel-action">Abrir a loja online</span>
+            </a>
+          </li>
+          <% } %>
+        </ul>
+      </div>
+    </section>
+
+    <% if (site.content.marquee && site.content.marquee.length) { %>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <% for (let r = 0; r < 2; r++) { %>
+          <% for (const phrase of site.content.marquee) { %>
+            <span class="marquee-item"><%= phrase %></span>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- ===================================================================
+         A CASA
+         =================================================================== -->
+    <section id="experiencia" class="section" aria-labelledby="manifesto-heading">
+      <div class="container manifesto-grid">
+        <div class="manifesto-copy">
+          <p class="eyebrow"><%= site.content.manifesto.eyebrow %></p>
+          <h2 class="section-title" id="manifesto-heading"><%= site.content.manifesto.title %></h2>
+          <% for (const paragraph of site.content.manifesto.paragraphs) { %>
+            <p><%= paragraph %></p>
+          <% } %>
+
+          <% if (site.content.manifesto.stats.length) { %>
+          <dl class="stats-row">
+            <% for (const stat of site.content.manifesto.stats) { %>
+              <div>
+                <dt class="stat-label"><%= stat.label %></dt>
+                <dd class="stat-value"><%= stat.value %></dd>
+              </div>
+            <% } %>
+          </dl>
+          <% } %>
+        </div>
+
+        <figure class="manifesto-figure">
+          <img
+            src="<%= site.content.manifesto.image %>"
+            alt="<%= site.content.manifesto.imageAlt %>"
+            width="896"
+            height="1200"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         CARDÁPIO
+         =================================================================== -->
+    <section id="menu" class="section section-elevated" aria-labelledby="menu-heading">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title" id="menu-heading">Cardápio</h2>
+          <p class="section-lead">
+            Toque em <span class="inline-plus" aria-hidden="true">+</span><span class="visually-hidden">adicionar</span>
+            nos itens para montar seu pedido e enviar pelo WhatsApp<%= links.ifood ? '. Se preferir, peça pelo iFood.' : '.' %>
+          </p>
+        </div>
+
+        <% if (demoMode) { %>
+        <!-- Seletor de modelo de cardápio: só no modo demonstração (apresentação de vendas) -->
+        <div class="menu-concept-bar" role="group" aria-label="Modelos de cardápio por estilo de cafeteria">
+          <button type="button" class="concept-card is-active" data-concept-select="completo">
+            <span class="concept-card-tag">Visão geral, 6 categorias</span>
+            <span class="concept-card-title">Cardápio completo</span>
+            <span class="concept-card-sub">Cafés especiais, brunch, folhados e pâtisserie</span>
+          </button>
+          <button type="button" class="concept-card" data-concept-select="torrefacao">
+            <span class="concept-card-tag">Modelo 01: Coffee Roasters</span>
+            <span class="concept-card-title">Torrefação e especiais</span>
+            <span class="concept-card-sub">Microlotes filtrados, assinatura e espresso</span>
+          </button>
+          <button type="button" class="concept-card" data-concept-select="brunch">
+            <span class="concept-card-tag">Modelo 02: All-Day Brunch</span>
+            <span class="concept-card-title">Café e brunch autoral</span>
+            <span class="concept-card-sub">Ovos beneditinos, toasts no levain e lattes</span>
+          </button>
+          <button type="button" class="concept-card" data-concept-select="patisserie">
+            <span class="concept-card-tag">Modelo 03: Boutique</span>
+            <span class="concept-card-title">Pâtisserie e viennoiserie</span>
+            <span class="concept-card-sub">Tortas finas, croissants e harmonizações</span>
+          </button>
+        </div>
+        <% } %>
+
+        <% if (menu.length > 1) { %>
+        <div class="menu-tabs" role="group" aria-label="Filtrar o cardápio por categoria">
+          <button type="button" class="menu-tab is-active" aria-pressed="true" data-menu-filter="all">Tudo</button>
+          <% for (const category of menu) { %>
+            <button type="button" class="menu-tab" aria-pressed="false" data-menu-filter="<%= category.slug %>"><%= category.name %></button>
+          <% } %>
+        </div>
+        <% } %>
+
+        <div id="menu-list" class="menu-list">
+          <% for (const category of menu) { %>
+            <section class="menu-category-block" data-category-slug="<%= category.slug %>" aria-labelledby="cat-<%= category.slug %>">
+              <div class="menu-category-header">
+                <h3 class="menu-category-title" id="cat-<%= category.slug %>"><%= category.name %></h3>
+                <% if (category.description) { %>
+                  <p class="menu-category-desc"><%= category.description %></p>
+                <% } %>
+              </div>
+
+              <ul class="menu-items">
+                <% for (const item of category.items) { %>
+                  <li
+                    class="menu-item"
+                    data-menu-item
+                    data-item-id="<%= item.id %>"
+                    data-item-name="<%= item.name %>"
+                    data-item-price="<%= item.priceCents %>"
+                  >
+                    <div class="menu-item-main">
+                      <div class="menu-item-line">
+                        <h4 class="menu-item-name"><%= item.name %></h4>
+                        <span class="menu-item-leader" aria-hidden="true"></span>
+                        <span class="menu-item-price"><%= formatBRL(item.priceCents) %></span>
+                      </div>
+                      <% if (item.origin || item.volume) { %>
+                        <p class="menu-item-meta"><% if (item.origin) { %><span><%= item.origin %></span><% } %><% if (item.volume) { %> <span class="menu-item-volume"><%= item.volume %></span><% } %></p>
+                      <% } %>
+                      <% if (item.description) { %>
+                        <p class="menu-item-desc"><%= item.description %></p>
+                      <% } %>
+                      <% if (item.tastingNotes || item.isSignature) { %>
+                        <p class="menu-item-notes">
+                          <% if (item.isSignature) { %><span class="badge-signature">Assinatura da casa</span><% } %>
+                          <% if (item.tastingNotes) { %><span class="tasting-notes"><%= item.tastingNotes %></span><% } %>
+                        </p>
+                      <% } %>
+                    </div>
+
+                    <div class="menu-item-actions">
+                      <button type="button" class="item-add" data-pick-btn aria-label="Adicionar <%= item.name %> ao pedido">
+                        <%- icon('plus') %>
+                      </button>
+                      <div class="item-stepper" data-item-stepper hidden>
+                        <button type="button" class="stepper-btn" data-qty-minus aria-label="Tirar um <%= item.name %>"><%- icon('minus') %></button>
+                        <span class="stepper-qty" data-qty-val aria-live="polite">1</span>
+                        <button type="button" class="stepper-btn" data-qty-plus aria-label="Mais um <%= item.name %>"><%- icon('plus') %></button>
+                      </div>
+                    </div>
+                  </li>
+                <% } %>
+              </ul>
+            </section>
+          <% } %>
+        </div>
+
+        <div class="menu-cta">
+          <p class="menu-cta-text">Prefere receber em casa ou retirar no balcão?</p>
+          <div class="menu-cta-actions">
+            <% if (links.ifood) { %>
+              <a href="<%= links.ifood %>" class="btn btn-primary" target="_blank" rel="noopener noreferrer"><%- icon('scooter') %> Pedir no iFood</a>
+            <% } %>
+            <a href="<%= links.whatsappOrder %>" class="btn <%= links.ifood ? 'btn-outline' : 'btn-primary' %>" target="_blank" rel="noopener noreferrer"><%- icon('chat') %> Pedir pelo WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         O PROCESSO (sequência real: origem, torra, xícara)
+         =================================================================== -->
+    <section id="ritual" class="section" aria-labelledby="ritual-heading">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow"><%= site.content.ritual.eyebrow %></p>
+          <h2 class="section-title" id="ritual-heading"><%= site.content.ritual.title %></h2>
+        </div>
+
+        <ol class="ritual-grid">
+          <% site.content.ritual.steps.forEach((step, idx) => { %>
+            <li class="ritual-card">
+              <div class="ritual-media">
+                <img src="<%= step.image %>" alt="<%= step.title %>" width="896" height="1200" loading="lazy" decoding="async">
+              </div>
+              <div class="ritual-body">
+                <span class="ritual-step-num" aria-hidden="true"><%= idx + 1 %></span>
+                <h3><%= step.title %></h3>
+                <p><%= step.text %></p>
+              </div>
+            </li>
+          <% }) %>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         INSTAGRAM / AMBIENTE
+         =================================================================== -->
+    <section id="galeria" class="section section-elevated insta" aria-labelledby="galeria-heading">
+      <div class="container insta-grid">
+        <div class="insta-copy">
+          <% if (links.instagram) { %>
+            <p class="eyebrow">No Instagram</p>
+            <h2 class="section-title insta-handle" id="galeria-heading"><%= links.instagramHandle %></h2>
+            <p class="section-lead">O cardápio da semana, as safras que chegam e o dia a dia do balcão. Siga para saber primeiro.</p>
+            <a href="<%= links.instagram %>" class="btn btn-primary" target="_blank" rel="noopener noreferrer"><%- icon('camera') %> Seguir no Instagram</a>
+          <% } else { %>
+            <p class="eyebrow">O ambiente</p>
+            <h2 class="section-title" id="galeria-heading">Um lugar para ficar.</h2>
+            <p class="section-lead">Luz baixa, mesas sem pressa e o cheiro da torra fresca.</p>
+          <% } %>
+        </div>
+
+        <div class="insta-photos">
+          <% for (const photo of gallery) { %>
+            <% if (links.instagram) { %>
+              <a class="insta-photo" href="<%= links.instagram %>" target="_blank" rel="noopener noreferrer">
+                <img src="<%= photo.src %>" alt="<%= photo.alt %>" width="1024" height="1024" loading="lazy" decoding="async">
+              </a>
+            <% } else { %>
+              <figure class="insta-photo">
+                <img src="<%= photo.src %>" alt="<%= photo.alt %>" width="1024" height="1024" loading="lazy" decoding="async">
+              </figure>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <% if (reservationsOn) { %>
+    <!-- ===================================================================
+         RESERVAS
+         =================================================================== -->
+    <section id="reserva" class="section" aria-labelledby="reserva-heading">
+      <div class="container">
+        <div class="booking-shell">
+          <aside class="booking-aside">
+            <div>
+              <p class="eyebrow">Reservas</p>
+              <h2 class="section-title" id="reserva-heading">Reserve sua mesa.</h2>
+              <p class="section-lead">
+                <% if (staticMode) { %>
+                  Escolha o dia e o horário. O pedido de reserva vai para o nosso WhatsApp e a equipe confirma por lá.
+                <% } else { %>
+                  Escolha o dia e um horário com vaga. A equipe confirma pelo WhatsApp.
+                <% } %>
+              </p>
+
+              <ul class="experience-list" aria-label="Experiências disponíveis">
+                <% for (const exp of site.reservations.experiences) { %>
+                  <li>
+                    <strong><%= exp.name %></strong>
+                    <span><%= exp.description %></span>
+                  </li>
+                <% } %>
+              </ul>
+            </div>
+
+            <a href="<%= links.whatsappGroups %>" target="_blank" rel="noopener noreferrer" class="text-link">
+              Grupo com mais de <%= site.reservations.maxPartySize %> pessoas? Fale com a gente no WhatsApp
+            </a>
+          </aside>
+
+          <div class="booking-main">
+            <div id="booking-form-view">
+              <div class="booking-top">
+                <h3>Dados da reserva</h3>
+                <p class="status-pill">
+                  <span class="status-dot is-open" aria-hidden="true"></span>
+                  <span id="availability-badge"><%= staticMode ? 'Confirmação pelo WhatsApp' : 'Vagas em tempo real' %></span>
+                </p>
+              </div>
+
+              <form id="reservation-form" novalidate>
+                <!-- Campo invisível contra robôs -->
+                <div class="hp-field" aria-hidden="true">
+                  <label for="cust-website">Não preencha este campo</label>
+                  <input type="text" id="cust-website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-field form-field-full selected-menu-box" id="selected-menu-box" hidden>
+                    <div class="selected-menu-header">
+                      <strong>Itens do cardápio para a sua mesa</strong>
+                      <button type="button" class="chip-btn" id="clear-menu-selection-btn">Tirar itens</button>
+                    </div>
+                    <p class="selected-menu-list" id="selected-menu-summary"></p>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="cust-date">Data</label>
+                    <input
+                      type="date"
+                      id="cust-date"
+                      name="date"
+                      class="form-input"
+                      min="<%= bookingWindow.min %>"
+                      max="<%= bookingWindow.max %>"
+                      value="<%= bookingWindow.min %>"
+                      required
+                    >
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="cust-guests">Pessoas</label>
+                    <select id="cust-guests" name="partySize" class="form-select" required>
+                      <% for (let n = 1; n <= site.reservations.maxPartySize; n++) { %>
+                        <option value="<%= n %>" <%= n === 2 ? 'selected' : '' %>><%= n === 1 ? '1 pessoa' : n + ' pessoas' %></option>
+                      <% } %>
+                    </select>
+                  </div>
+
+                  <div class="form-field form-field-full">
+                    <span class="form-label" id="slot-group-label">Horário</span>
+                    <input type="hidden" id="cust-time" name="time" required>
+                    <div id="slots-container" class="slots-grid" role="radiogroup" aria-labelledby="slot-group-label" aria-live="polite">
+                      <div class="slot-placeholder">Carregando horários...</div>
+                    </div>
+                  </div>
+
+                  <div class="form-field form-field-full">
+                    <label class="form-label" for="cust-exp">Experiência</label>
+                    <select id="cust-exp" name="experience" class="form-select" required>
+                      <% for (const exp of site.reservations.experiences) { %>
+                        <option value="<%= exp.id %>"><%= exp.name %></option>
+                      <% } %>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="cust-name">Nome</label>
+                    <input type="text" id="cust-name" name="name" class="form-input" autocomplete="name" maxlength="80" required>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="cust-phone">WhatsApp com DDD</label>
+                    <input
+                      type="tel"
+                      id="cust-phone"
+                      name="phone"
+                      class="form-input"
+                      placeholder="(61) 99999-9999"
+                      autocomplete="tel"
+                      inputmode="tel"
+                      maxlength="20"
+                      required
+                    >
+                  </div>
+
+                  <div class="form-field form-field-full">
+                    <label class="form-label" for="cust-email">E-mail (opcional)</label>
+                    <input type="email" id="cust-email" name="email" class="form-input" autocomplete="email" maxlength="254">
+                  </div>
+
+                  <div class="form-field form-field-full">
+                    <label class="form-label" for="cust-notes">Observações (opcional)</label>
+                    <textarea
+                      id="cust-notes"
+                      name="notes"
+                      rows="2"
+                      class="form-textarea"
+                      maxlength="500"
+                      placeholder="Leite vegetal, aniversário, mesa perto da janela..."
+                    ></textarea>
+                  </div>
+
+                  <div class="form-field form-field-full">
+                    <label class="consent-row" for="cust-consent">
+                      <input type="checkbox" id="cust-consent" name="consent" required>
+                      <span>
+                        Concordo com o uso destes dados só para cuidar da minha reserva, conforme a
+                        <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>.
+                      </span>
+                    </label>
+                  </div>
+
+                  <div class="form-field form-field-full" id="form-error-box" hidden>
+                    <div class="form-alert" role="alert" id="form-error-text"></div>
+                  </div>
+
+                  <div class="form-field form-field-full">
+                    <button type="submit" id="submit-btn" class="btn btn-primary btn-lg">
+                      <% if (staticMode) { %><%- icon('chat') %> Enviar reserva pelo WhatsApp<% } else { %><%- icon('calendar') %> Solicitar reserva<% } %>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Comprovante -->
+            <div id="booking-success-view" class="booking-success" hidden aria-live="polite" tabindex="-1">
+              <% if (staticMode) { %>
+                <p class="eyebrow">Pedido de reserva enviado</p>
+                <h3 class="section-title">Agora é com a gente no WhatsApp.</h3>
+                <p class="section-lead">
+                  Confira se a mensagem foi enviada na conversa que abriu. A reserva vale quando a equipe responder confirmando.
+                </p>
+              <% } else { %>
+                <p class="eyebrow">Pedido recebido</p>
+                <h3 class="section-title">Sua mesa está pré-reservada.</h3>
+                <p class="section-lead">
+                  Guarde o código. A equipe confirma pelo WhatsApp, e você pode consultar ou cancelar a reserva aqui mesmo,
+                  com o código e o seu WhatsApp.
+                </p>
+              <% } %>
+
+              <div class="ticket-card">
+                <div class="ticket-header">
+                  <div>
+                    <span class="ticket-label">Código da reserva</span>
+                    <div class="ticket-code" id="ticket-code">#--------</div>
+                  </div>
+                  <span class="status-badge status-pending" id="ticket-status"><%= staticMode ? 'Enviada pelo WhatsApp' : 'Aguardando confirmação' %></span>
+                </div>
+
+                <dl class="ticket-dl">
+                  <div><dt>Nome</dt><dd id="ticket-name">—</dd></div>
+                  <div><dt>Data e horário</dt><dd id="ticket-datetime">—</dd></div>
+                  <div><dt>Pessoas</dt><dd id="ticket-guests">—</dd></div>
+                  <div><dt>Experiência</dt><dd id="ticket-experience">—</dd></div>
+                </dl>
+              </div>
+
+              <div class="ticket-actions">
+                <a href="#" id="ticket-whatsapp-link" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                  <%- icon('chat') %> <%= staticMode ? 'Abrir o WhatsApp de novo' : 'Enviar comprovante no WhatsApp' %>
+                </a>
+                <button type="button" id="ticket-ics-btn" class="btn btn-outline btn-sm"><%- icon('calendar') %> Adicionar à agenda</button>
+                <button type="button" id="ticket-reset-btn" class="btn btn-ghost btn-sm">Fazer outra reserva</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <% if (!staticMode) { %>
+        <details class="lookup" id="reservation-lookup">
+          <summary>Já reservou? Consulte ou cancele sua reserva</summary>
+          <div class="lookup-body">
+            <form id="lookup-form" class="lookup-form" novalidate>
+              <div class="form-field">
+                <label class="form-label" for="lookup-code">Código da reserva</label>
+                <input type="text" id="lookup-code" class="form-input" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ex.: CRM88A2F">
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="lookup-phone">WhatsApp usado na reserva</label>
+                <input type="tel" id="lookup-phone" class="form-input" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(61) 99999-9999">
+              </div>
+              <button type="submit" class="btn btn-outline" id="lookup-submit-btn">Consultar</button>
+            </form>
+            <div class="form-alert" id="lookup-error" role="alert" hidden></div>
+
+            <div class="lookup-result" id="lookup-result" hidden aria-live="polite">
+              <div class="lookup-result-head">
+                <span class="ticket-code" id="lookup-res-code"></span>
+                <span class="status-badge" id="lookup-res-status"></span>
+              </div>
+              <p class="lookup-res-line" id="lookup-res-when"></p>
+              <p class="lookup-res-line" id="lookup-res-detail"></p>
+              <button type="button" class="btn btn-outline btn-sm" id="lookup-cancel-btn" hidden>Cancelar reserva</button>
+              <p class="lookup-note" id="lookup-res-note"></p>
+            </div>
+          </div>
+        </details>
+        <% } %>
+      </div>
+    </section>
+    <% } %>
+
+    <% if (site.content.testimonials && site.content.testimonials.length) { %>
+    <!-- ===================================================================
+         DEPOIMENTOS
+         =================================================================== -->
+    <section class="section section-elevated" aria-labelledby="depoimentos-heading">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title" id="depoimentos-heading">Quem já passou por aqui</h2>
+        </div>
+        <div class="testimonials-grid">
+          <% for (const item of site.content.testimonials) { %>
+            <figure class="testimonial">
+              <blockquote class="testimonial-quote"><p><%= item.quote %></p></blockquote>
+              <figcaption class="testimonial-author">
+                <strong><%= item.author %></strong>
+                <% if (item.detail) { %><span><%= item.detail %></span><% } %>
+              </figcaption>
+            </figure>
+          <% } %>
+        </div>
+      </div>
+    </section>
+    <% } %>
+
+    <!-- ===================================================================
+         VISITE A LOJA
+         =================================================================== -->
+    <section id="visite" class="section visit" aria-labelledby="visit-heading">
+      <div class="container visit-grid">
+        <figure class="visit-photo">
+          <img src="<%= visitPhoto.src %>" alt="<%= visitPhoto.alt %>" width="1264" height="848" loading="lazy" decoding="async">
+        </figure>
+
+        <div class="visit-info">
+          <h2 class="section-title" id="visit-heading">Visite a loja</h2>
+          <address class="visit-address">
+            <%= addr.street %><br>
+            <%= addr.district ? addr.district + ', ' : '' %><span data-city-text><%= addr.city %>/<%= addr.state %></span>
+            <% if (addr.zip) { %><br>CEP <%= addr.zip %><% } %>
+          </address>
+
+          <p class="open-status visit-status">
+            <span class="status-dot<%= statusOpen ? ' is-open' : '' %>" data-open-dot aria-hidden="true"></span>
+            <span data-open-status><%= statusText %></span>
+          </p>
+
+          <div class="visit-actions">
+            <a href="<%= links.maps %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><%- icon('pin') %> Como chegar</a>
+            <a href="<%= links.whatsapp %>" target="_blank" rel="noopener noreferrer" class="btn btn-outline"><%- icon('chat') %> WhatsApp</a>
+          </div>
+
+          <h3 class="hours-title"><%- icon('clock') %> Horários</h3>
+          <dl class="hours-list">
+            <% for (const group of openingHours) { %>
+              <div class="hours-row<%= group.closed ? ' is-closed' : '' %>" data-days="<%= group.days.join(',') %>">
+                <dt><%= group.label %></dt>
+                <dd><%= group.hours %></dd>
+              </div>
+            <% } %>
+          </dl>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bandeja do pedido montado no cardápio -->
+  <div class="selection-tray" id="selection-tray" hidden role="region" aria-label="Seu pedido">
+    <div class="selection-tray-info">
+      <strong id="tray-title">0 itens · R$ 0,00</strong>
+      <span id="tray-items-preview"></span>
+    </div>
+    <div class="selection-tray-actions">
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" id="tray-whatsapp-order-btn">
+        <%- icon('chat') %> Enviar pedido no WhatsApp
+      </a>
+      <% if (reservationsOn) { %>
+        <a href="#reserva" class="btn btn-outline btn-sm" id="tray-to-reservation-btn">Levar para a reserva</a>
+      <% } %>
+      <button type="button" class="chip-btn" id="tray-clear-btn">Limpar</button>
+    </div>
+  </div>
+
+  <% if (demoMode) { %>
+  <aside class="demo-studio" id="demo-studio" aria-label="Personalizador de demonstração">
+    <div class="demo-panel" id="demo-panel" hidden>
+      <div class="demo-panel-header">
+        <h2 class="demo-panel-title">Modo Demonstração Comercial</h2>
+        <button type="button" class="chip-btn" id="demo-close-btn" aria-label="Fechar painel">✕</button>
+      </div>
+
+      <span class="demo-section-label">1. Nome e cidade da cafeteria do cliente</span>
+      <div class="demo-input-row">
+        <input type="text" id="demo-brand-input" class="demo-input" placeholder="Ex: Villa Café" value="<%= site.brand.name %>" maxlength="32">
+        <input type="text" id="demo-city-input" class="demo-input" placeholder="Ex: São Paulo/SP" value="<%= addr.city %>/<%= addr.state %>" maxlength="32">
+      </div>
+
+      <span class="demo-section-label">2. Modelo de cardápio</span>
+      <div class="demo-chip-row">
+        <button type="button" class="demo-chip" data-demo-concept="torrefacao">Torrefação</button>
+        <button type="button" class="demo-chip" data-demo-concept="brunch">Brunch</button>
+        <button type="button" class="demo-chip" data-demo-concept="patisserie">Pâtisserie</button>
+      </div>
+
+      <span class="demo-section-label">3. Paleta</span>
+      <div class="demo-chip-row">
+        <button type="button" class="demo-chip is-active" data-demo-theme="noir">Noir</button>
+        <button type="button" class="demo-chip" data-demo-theme="terra">Terra</button>
+        <button type="button" class="demo-chip" data-demo-theme="creme">Creme</button>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-sm demo-copy-btn" id="demo-copy-link-btn">
+        Copiar link personalizado para o cliente
+      </button>
+    </div>
+
+    <button type="button" class="demo-toggle-btn" id="demo-toggle-btn" aria-expanded="false" aria-controls="demo-panel">
+      Personalizar demonstração
+    </button>
+  </aside>
+  <% } %>
+
+  <%- include('../partials/footer') %>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<% const addr = site.contact.address; %>
+<footer class="site-footer" id="rodape">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="brand-name"><span data-brand-text><%= site.brand.name %></span><span class="brand-dot">.</span></a>
+      <p><%= site.seo.description %></p>
+    </div>
+
+    <div>
+      <h2 class="footer-heading">Peça e acompanhe</h2>
+      <ul class="footer-links">
+        <% if (links.ifood) { %>
+          <li><a href="<%= links.ifood %>" target="_blank" rel="noopener noreferrer"><%- include('icon', { name: 'scooter' }) %>iFood</a></li>
+        <% } %>
+        <li><a href="<%= links.whatsapp %>" target="_blank" rel="noopener noreferrer"><%- include('icon', { name: 'chat' }) %>WhatsApp <%= site.contact.phoneDisplay %></a></li>
+        <% if (links.instagram) { %>
+          <li><a href="<%= links.instagram %>" target="_blank" rel="noopener noreferrer"><%- include('icon', { name: 'camera' }) %>Instagram <%= links.instagramHandle %></a></li>
+        <% } %>
+        <% if (links.onlineStore) { %>
+          <li><a href="<%= links.onlineStore %>" target="_blank" rel="noopener noreferrer"><%- include('icon', { name: 'bag' }) %>Loja online</a></li>
+        <% } %>
+        <li><a href="mailto:<%= site.contact.email %>"><%= site.contact.email %></a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="footer-heading">Visite</h2>
+      <address class="footer-address">
+        <%= addr.street %><br>
+        <%= addr.district ? addr.district + ', ' : '' %><span data-city-text><%= addr.city %>/<%= addr.state %></span><br>
+        <% if (addr.zip) { %>CEP <%= addr.zip %><% } %>
+      </address>
+      <a href="<%= links.maps %>" target="_blank" rel="noopener noreferrer" class="footer-maps"><%- include('icon', { name: 'pin' }) %>Como chegar</a>
+    </div>
+
+    <div>
+      <h2 class="footer-heading">No site</h2>
+      <ul class="footer-links">
+        <li><a href="/#menu">Cardápio</a></li>
+        <% if (site.reservations.enabled) { %><li><a href="/#reserva">Reservar mesa</a></li><% } %>
+        <li><a href="/privacidade">Política de privacidade</a></li>
+        <% if (typeof demoMode !== 'undefined' && demoMode && !staticMode) { %>
+          <li><a href="/admin">Acesso da equipe</a></li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <span>© <%= new Date().getFullYear() %> <span data-brand-text><%= site.brand.name %></span>. CNPJ <%= site.brand.cnpj %>.</span>
+    <span>Desde <%= site.brand.foundedYear %>. Todos os direitos reservados.</span>
+  </div>
+</footer>
+
+<%# Atalhos fixos no celular: os quatro caminhos que mais importam %>
+<nav class="action-bar" aria-label="Atalhos">
+  <% if (links.ifood) { %>
+    <a href="<%= links.ifood %>" target="_blank" rel="noopener noreferrer" class="action-bar-item is-ifood">
+      <%- include('icon', { name: 'scooter' }) %><span>iFood</span>
+    </a>
+  <% } %>
+  <a href="<%= links.whatsappOrder %>" target="_blank" rel="noopener noreferrer" class="action-bar-item is-whatsapp">
+    <%- include('icon', { name: 'chat' }) %><span>WhatsApp</span>
+  </a>
+  <% if (links.instagram) { %>
+    <a href="<%= links.instagram %>" target="_blank" rel="noopener noreferrer" class="action-bar-item is-instagram">
+      <%- include('icon', { name: 'camera' }) %><span>Instagram</span>
+    </a>
+  <% } %>
+  <a href="<%= links.maps %>" target="_blank" rel="noopener noreferrer" class="action-bar-item is-store">
+    <%- include('icon', { name: 'pin' }) %><span>Como chegar</span>
+  </a>
+</nav>
+
+<script type="application/json" id="store-data"><%- storeDataJson %></script>
